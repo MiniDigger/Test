@@ -1,6 +1,6 @@
 package de.MiniDigger.Test;
 
-// test
+// test2
 public class Test {
 
 }
