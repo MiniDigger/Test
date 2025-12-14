@@ -1,0 +1,22 @@
+name: test2
+
+on:
+  workflow_call:
+    secrets:
+      publishing_env_vars:
+        description: extra env file for any environment to apply to publishing commands
+        required: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          PUBLISHING_ENV: ${{ secrets.publishing_env_vars }}
+        run: |
+          set -o allexport
+          eval $(echo "$PUBLISHING_ENV")
+          echo "publishing env: $PUBLISHING_ENV"
+          set +o allexport
+          echo "env"
+          env
