@@ -11,14 +11,17 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - env:
-          PUBLISHING_ENV: ${{ secrets.publishing_env_vars }}
-        run: |
-          set -o allexport
-          eval $(echo "$PUBLISHING_ENV")
-          echo "publishing env: $PUBLISHING_ENV"
-          set +o allexport
-          echo "env"
+      - run: |
+          publishing_env_vars="${{ secrets.publishing_env_vars }}"
+          regex='([a-zA-Z0-9_]+)="((([^"]*\\n)*[^"]*)|([^"]*))"'
+
+          while [[ $publishing_env_vars =~ $regex ]]; do
+            var_name="${BASH_REMATCH[1]}"
+            var_value="${BASH_REMATCH[2]}"
+            publishing_env_vars="${publishing_env_vars#*$var_name=\"$var_value\"}"
+            export "$var_name=$var_value"
+          done
+
           env
           env > test.env
       - uses: actions/upload-artifact@v4
