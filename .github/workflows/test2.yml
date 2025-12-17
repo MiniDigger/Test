@@ -12,7 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          publishing_env_vars="${{ secrets.publishing_env_vars }}"
+          echo "$PUBLISHING_ENV" > /tmp/publishing_env_vars
+        env:
+          PUBLISHING_ENV: ${{ secrets.publishing_env_vars }}
+          
+      - run: |
+          publishing_env_vars="$(cat /tmp/publishing_env_vars)"
           regex='([a-zA-Z0-9_]+)="((([^"]*\\n)*[^"]*)|([^"]*))"'
 
           while [[ $publishing_env_vars =~ $regex ]]; do
